@@ -2,8 +2,7 @@
 **/node_modules/*
 
 dist/*
-build/*
-renderer/dist/*
+dist-electron/*
 
 openjtalk/*
 

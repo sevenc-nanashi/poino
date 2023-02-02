@@ -1,5 +1,9 @@
-import { ipcMain as _ipcMain, ipcRenderer as _ipcRenderer, WebContents } from 'electron'
-import { randomUUID } from 'crypto'
+import {
+  ipcMain as _ipcMain,
+  ipcRenderer as _ipcRenderer,
+  WebContents,
+} from "electron"
+import { randomUUID } from "crypto"
 
 type callback = (detail: any, replay: (detail?: any) => void) => void
 
@@ -8,8 +12,8 @@ interface Callbacks {
 }
 
 interface Message {
-  id:     string
-  type:   string
+  id: string
+  type: string
   detail: any
 }
 
@@ -27,8 +31,8 @@ class IpcEvent extends Event {
 }
 
 export class ipcMain extends EventTarget {
-  ipc:       typeof _ipcMain
-  ids:       string[]
+  ipc: typeof _ipcMain
+  ids: string[]
   callbacks: Callbacks
 
   constructor() {
@@ -37,38 +41,37 @@ export class ipcMain extends EventTarget {
     this.ids = []
     this.callbacks = {}
 
-    this.ipc.on('ipc-message', (event, message: Message) => {
+    this.ipc.on("ipc-message", (event, message: Message) => {
       if (this.ids.includes(message.id)) {
         this.ids = this.ids.filter((id) => id !== message.id)
         this.dispatchEvent(new IpcEvent(message.id, message.detail))
-      } else
-      if (message.type in this.callbacks) {
+      } else if (message.type in this.callbacks) {
         const callback = this.callbacks[message.type]
-        const window = {webContents: event.sender}
-        const reply = (detail: any = null) => this.send(window, message.type, detail, message.id)
+        const window = { webContents: event.sender }
+        const reply = (detail: any = null) =>
+          this.send(window, message.type, detail, message.id)
         callback(message.detail, reply)
       }
     })
   }
 
-  send(
-    window: Window,
-    type:   string,
-    detail: any,
-    id?:    string
-  ): Promise<any> {
+  send(window: Window, type: string, detail: any, id?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       if (id === undefined) {
         id = randomUUID()
         this.ids.push(id)
-        this.addEventListener(id, (event: IpcEvent) => {
-          resolve(event.detail)
-        }, {once: true})
+        this.addEventListener(
+          id,
+          (event: IpcEvent) => {
+            resolve(event.detail)
+          },
+          { once: true }
+        )
       } else {
         resolve(null)
       }
 
-      window.webContents.send('ipc-message', {id, type, detail})
+      window.webContents.send("ipc-message", { id, type, detail })
     })
   }
 
@@ -78,8 +81,8 @@ export class ipcMain extends EventTarget {
 }
 
 export class ipcRenderer extends EventTarget {
-  ipc:       typeof _ipcRenderer
-  ids:       string[]
+  ipc: typeof _ipcRenderer
+  ids: string[]
   callbacks: Callbacks
 
   constructor() {
@@ -88,36 +91,37 @@ export class ipcRenderer extends EventTarget {
     this.ids = []
     this.callbacks = {}
 
-    this.ipc.on('ipc-message', (event, message: Message) => {
+    this.ipc.on("ipc-message", (event, message: Message) => {
       if (this.ids.includes(message.id)) {
         this.ids = this.ids.filter((id) => id !== message.id)
         this.dispatchEvent(new IpcEvent(message.id, message.detail))
-      } else
-      if (message.type in this.callbacks) {
+      } else if (message.type in this.callbacks) {
         const callback = this.callbacks[message.type]
-        const reply = (detail: any = null) => this.send(message.type, detail, message.id)
+        const reply = (detail: any = null) =>
+          this.send(message.type, detail, message.id)
         callback(message.detail, reply)
       }
     })
   }
 
-  send(
-    type:   string,
-    detail: any,
-    id?:    string
-  ): Promise<any> {
+  send(type: string, detail: any, id?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       if (id === undefined) {
         id = randomUUID()
         this.ids.push(id)
-        this.addEventListener(id, (event: IpcEvent) => {
-          resolve(event.detail)
-        }, {once: true})
+        this.addEventListener(
+          id,
+          (event: IpcEvent) => {
+            resolve(event.detail)
+          },
+          { once: true }
+        )
       } else {
         resolve(null)
       }
 
-      this.ipc.send('ipc-message', {id, type, detail})
+      console.log(`[ipc] send ${type} ${id}`)
+      this.ipc.send("ipc-message", { id, type, detail })
     })
   }
 
