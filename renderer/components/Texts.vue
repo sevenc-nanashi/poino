@@ -138,15 +138,15 @@ function openProject() {
   opening.value = true
   ;(window as any).project
     .open(!saved.value)
-    .then((texts: Text[] | null) => {
-      if (texts === null) return
-      if (texts.length <= 0) return
+    .then((newTexts: Text[] | null) => {
+      if (newTexts === null) return
+      if (newTexts.length <= 0) return
 
-      texts = texts.map((text) => {
+      texts.value = newTexts.map((text) => {
         const filtered = voices.value.filter(
           (voice) => voice.id === text.voiceId
         )
-        const voice = filtered.length > 0 ? filtered[0] : voices[0]
+        const voice = filtered.length > 0 ? filtered[0] : voices.value[0]
 
         return new Text(
           voice,
@@ -159,7 +159,7 @@ function openProject() {
         )
       })
 
-      selectText(texts[0])
+      selectText(newTexts[0])
       saved.value = true
       updateProject()
     })
@@ -375,7 +375,7 @@ const [onMount, onUnmount] = windowListener({
   },
 })
 onMounted(() => {
-	onMount()
+  onMount()
   player.value.addEventListener("ended", () => {
     playingIndex.value++
     if (playingIndex.value >= cacheFilePaths.value.length) {
@@ -404,7 +404,7 @@ onMounted(() => {
     .catch(console.error)
 })
 onUnmounted(() => {
-	onUnmount()
+  onUnmount()
 })
 </script>
 

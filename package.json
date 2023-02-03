@@ -7,7 +7,10 @@
   "scripts": {
     "start": "npx electron .",
     "dev": "vite",
-    "build": "vite build && electron-builder",
+    "build": "run-s build:vite build:icon build:electron",
+    "build:vite": "vite build",
+    "build:electron": "electron-builder",
+    "build:icon": "node ./scripts/buildIcon.js",
     "lint": "eslint renderer electron --ext .ts,.vue",
     "lint:fix": "eslint renderer electron --ext .ts,.vue --fix"
   },
@@ -31,17 +34,14 @@
     "copyright": "Copyright (c) 2022 KoharuYuzuki25",
     "asar": true,
     "files": [
-      "./build/openjtalk/*",
-      "./build/ts/*",
       "./openjtalk/hts_voice_nitech_jp_atr503_m001-1.05/*",
       "./openjtalk/open_jtalk_dic_utf_8-1.11/*",
-      "./renderer/dist/*",
-      "./renderer/dist/assets/*",
+      "./dist/*",
       "./voices/*",
       "./licenses.json"
     ],
     "mac": {
-      "icon": "./build/icon.icns",
+      "icon": "./dist/icon.icns",
       "artifactName": "${productName}-${os}-${arch}.zip",
       "target": [
         {
@@ -57,7 +57,7 @@
       ]
     },
     "win": {
-      "icon": "./build/icon.ico",
+      "icon": "./dist/icon.ico",
       "artifactName": "${productName}-${os}-${arch}.zip",
       "target": [
         {
