@@ -10,7 +10,7 @@
     "build": "run-s build:vite build:icon build:electron",
     "build:vite": "vite build",
     "build:electron": "electron-builder",
-    "build:icon": "node ./scripts/buildIcon.js",
+    "build:icon": "node ./scripts/buildIcon.mjs",
     "lint": "eslint renderer electron --ext .ts,.vue",
     "lint:fix": "eslint renderer electron --ext .ts,.vue --fix"
   },

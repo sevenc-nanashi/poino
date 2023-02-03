@@ -11,6 +11,11 @@
     "plugin:vue/vue3-essential",
     "prettier"
   ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
   "ignorePatterns": ["*.config.js", "dist", "dist-electron", "openjtalk"],
   "rules": {
     "prettier/prettier": "error",
